@@ -1,80 +1,108 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wenzhe's Tools</title>
-  <meta name="description" content="Singapore housing and CPF planning tools.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VWA Planning Tools</title>
+  <meta name="description" content="Voyage Wealth Advisory planning tools: BTO Planner and CPF Forecast Calculator.">
+  <!-- VWA logo for the browser tab and home-screen shortcuts, from vwagroup.sg. -->
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <meta name="theme-color" content="#1B1464">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Jost:wght@400;500;600;700&display=swap">
   <style>
+    /* Colours, fonts and details copied from the BTO Planner and CPF Forecast Calculator,
+       which take them from the Voyage Wealth Advisory website (vwagroup.sg). */
     :root {
-      --bg: #f6f5f1;
-      --card: #ffffff;
-      --text: #1d1d1f;
-      --muted: #5f6368;
-      --border: #e2e0da;
-      --accent: #c8102e;
+      --navy: #1b1464; --navy-deep: #110d40; --gold: #c99e10; --gold-soft: #e5c047;
+      --cream: #f1e5d1; --bg: #f4f6fa; --surface: #fff; --text: #1a1a1a; --muted: #4a4a55;
+      --radius: 4px; --page: 1100px; --gutter: clamp(16px, 3vw, 48px);
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #141416;
-        --card: #1e1e21;
-        --text: #f2f2f2;
-        --muted: #a0a0a8;
-        --border: #2e2e33;
-        --accent: #ff5a6e;
-      }
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.5;
-    }
-    main { max-width: 760px; margin: 0 auto; padding: 64px 16px; }
-    h1 { font-size: 2rem; margin: 0 0 8px; }
-    .lead { color: var(--muted); margin: 0 0 40px; }
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-    .card {
-      display: block;
-      padding: 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: inherit;
-      text-decoration: none;
-      transition: border-color .15s, transform .15s;
-    }
-    .card:hover, .card:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
-    .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .icon { font-size: 1.75rem; }
-    .card h2 { font-size: 1.15rem; margin: 12px 0 4px; }
-    .card p { color: var(--muted); margin: 0 0 16px; }
-    .go { color: var(--accent); font-weight: 600; }
-    footer { color: var(--muted); font-size: .85rem; margin-top: 48px; }
+    body { font-family: 'Jost', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text);
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+    .masthead { position: relative; background: var(--navy); color: #fff; padding: 56px var(--gutter) 64px; }
+    /* The website's gold horizon line along the bottom of the header. */
+    .masthead::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201, 158, 16, .6) 30%, rgba(201, 158, 16, .6) 70%, transparent); }
+    .masthead-inner, .site-footer-inner, main { max-width: var(--page); margin: 0 auto; width: 100%; box-sizing: border-box; }
+    .eyebrow { display: block; font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--gold-soft); margin-bottom: 10px; }
+    .masthead h1 { margin: 0; font-size: clamp(32px, 7vw, 52px); font-weight: 700; letter-spacing: -.01em; line-height: 1.1; }
+    .masthead-tag { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(20px, 3vw, 24px);
+      color: rgba(255, 255, 255, .85); margin: 12px 0 0; }
+    /* Padding sits inside main's width, so add it back to line up with the header text. */
+    main { flex: 1; padding: 40px var(--gutter) 56px; max-width: calc(var(--page) + 2 * var(--gutter)); }
+    main > h2 { color: var(--navy); font-size: 26px; margin: 0 0 24px; }
+    /* Short gold rule under each heading, as on the website. */
+    main h2::after { content: ""; display: block; width: 40px; height: 2px; background: var(--gold); margin-top: 8px; }
+    .tools { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+    .tool { display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius); padding: 24px;
+      border-top: 2px solid var(--gold); box-shadow: 0 12px 28px -22px rgba(27, 20, 100, .35);
+      color: inherit; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+    .tool:hover { transform: translateY(-3px); box-shadow: 0 18px 32px -20px rgba(27, 20, 100, .45); }
+    .tool:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+    .tool .eyebrow { color: var(--gold); }
+    .tool h3 { margin: 0; color: var(--navy); font-size: 22px; }
+    .tool p { margin: 10px 0 20px; line-height: 1.6; color: var(--muted); }
+    .tool ul { margin: 0 0 24px; padding-left: 18px; line-height: 1.7; }
+    .tool li::marker { color: var(--gold); }
+    /* Primary button, as on the website: gold with navy text. */
+    .button { margin-top: auto; align-self: start; background: var(--gold); color: var(--navy); font-weight: 600;
+      letter-spacing: .2em; text-transform: uppercase; font-size: 14px; padding: 14px 24px; border-radius: var(--radius); }
+    .tool:hover .button { background: var(--gold-soft); }
+    .callout { margin-top: 32px; background: var(--cream); border-left: 3px solid var(--gold); padding: 14px 18px;
+      border-radius: var(--radius); line-height: 1.6; }
+    .site-footer { background: var(--navy-deep); color: rgba(255, 255, 255, .7); padding: 28px var(--gutter); font-size: 14px; }
+    .site-footer .eyebrow { margin-bottom: 4px; }
+    .site-footer a { color: #fff; text-decoration: none; border-bottom: 1px solid var(--gold); }
+    .site-footer a:hover { color: var(--gold-soft); }
+    @media (prefers-reduced-motion: reduce) { .tool { transition: none; } .tool:hover { transform: none; } }
   </style>
 </head>
 <body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <span class="eyebrow">Voyage Wealth Advisory</span>
+      <h1>Planning Tools</h1>
+      <p class="masthead-tag">Your home and your CPF, planned together.</p>
+    </div>
+  </header>
   <main>
-    <h1>Wenzhe's Tools</h1>
-    <p class="lead">Planning tools for Singapore housing and CPF.</p>
-    <div class="grid">
-      <a class="card" href="https://wenzhecheah.github.io/btoPlanner/">
-        <div class="icon" aria-hidden="true">🏠</div>
-        <h2>BTO Planner</h2>
-        <p>Plan your BTO application, timeline and costs.</p>
-        <span class="go">Open →</span>
+    <h2>Choose a tool</h2>
+    <div class="tools">
+      <a class="tool" href="https://wenzhecheah.github.io/btoPlanner/">
+        <span class="eyebrow">Housing</span>
+        <h3>BTO Planner</h3>
+        <p>For couples buying a BTO flat: what you'll pay, when, and whether it comes from CPF, the grant, the loan or cash.</p>
+        <ul>
+          <li>The BTO journey, from HFE letter to keys</li>
+          <li>Grants, HDB loan and payment schemes</li>
+          <li>CPF OA and cash left at each stage</li>
+        </ul>
+        <span class="button">Open planner</span>
       </a>
-      <a class="card" href="https://wenzhecheah.github.io/CPF-Forecast-Calculator/">
-        <div class="icon" aria-hidden="true">📈</div>
-        <h2>CPF Forecast Calculator</h2>
-        <p>Project how your CPF balances grow over time.</p>
-        <span class="go">Open →</span>
+      <a class="tool" href="https://wenzhecheah.github.io/CPF-Forecast-Calculator/">
+        <span class="eyebrow">Retirement</span>
+        <h3>CPF Forecast Calculator</h3>
+        <p>See how your CPF savings grow, year by year, across OA, SA/RA and MediSave.</p>
+        <ul>
+          <li>Contributions, interest and extra interest</li>
+          <li>Housing payments, top-ups and transfers</li>
+          <li>RA at 55 and CPF LIFE payouts</li>
+        </ul>
+        <span class="button">Open calculator</span>
       </a>
     </div>
-    <footer>Not financial advice. Check figures with CPF Board and HDB.</footer>
+    <p class="callout">Both tools run entirely in your browser. Nothing you enter is sent anywhere.</p>
   </main>
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span class="eyebrow">Voyage Wealth Advisory</span>
+      <a href="https://vwagroup.sg/">vwagroup.sg</a>
+    </div>
+  </footer>
 </body>
 </html>
